@@ -1,0 +1,6 @@
+localreadme.md
+**account.json
+**kubeconfig
+**.tfstate
+**.terraform
+**.tfstate.backup

@@ -1,0 +1,18 @@
+pipeline {
+    agent { label 'maven-jenkins-slave' }
+
+    stages {
+        stage('Code Checkout') {
+            steps {
+                git 'https://github.com/Chenjigaram/testingbe'
+            }
+        }
+        stage('Run Build') {
+            steps {
+                withMaven(maven: 'maven3') {
+                    sh 'mvn clean install'
+                }
+            }
+        }
+    }
+}

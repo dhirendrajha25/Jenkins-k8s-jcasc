@@ -1,0 +1,25 @@
+pipeline {
+    agent { label 'jenkins-slave' }
+
+    stages {
+        stage('Code Checkout') {
+            steps {
+                git 'https://github.com/mendix/widgets-resources.git'
+            }
+        }
+        stage('Install dependencies') {
+            steps {
+                nodejs('node') {
+                    sh "npm i"
+                }
+            }
+        }
+        stage('Build Package') {
+            steps {
+                nodejs('node') {
+                    sh "npm run release"
+                }
+            }
+        }
+    }
+}
