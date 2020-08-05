@@ -360,19 +360,33 @@ master:
           - script: >
               folder('testjobs')
           - script: >
-              pipelineJob('testjobs/default-agent') {
+              pipelineJob('Mendixtestjob/jenkins-agent') {
                 definition {
                   cps {
                     script("""\
                       pipeline {
-                        agent any
+                        agent {label 'jenkins-k8s-jenkins-slave'}
                         stages {
-                          stage ('test') {
-                            steps {
-                              echo "hello"
-                            }
+                         stage('Code Checkout') {
+                           steps {
+                                  git 'https://github.com/mendix/widgets-resources.git'
+                              }
                           }
-                        }
+                          stage('Install dependencies') {
+                              steps {
+                                  nodejs('node') {
+                                      sh "npm i"
+                                  }
+                              }
+                          }
+                          stage('Build Package') {
+                              steps {
+                                  nodejs('node') {
+                                      sh "npm run release"
+                                  }
+                              }
+                          }
+                      }
                       }""".stripIndent())
                   }
                 }
