@@ -39,19 +39,31 @@ automated deployment of kubernetes cluster on google cloud and also to deploy Je
 ## Prerequisites to run the project 
 -   **GCP account**: If you don’t have a GCP account, [create one now](https://console.cloud.google.com/freetrial/). This tutorial can be
     completed using only the services included in [GCP  Free Tier](https://cloud.google.com/free/).
+
 -   **GCP project**: GCP organizes resources into projects. You can [create one](https://console.cloud.google.com/projectcreate) in the GCP Console.
     You need the project ID later in this tutorial.
+
 -   **GCP service account key**: Terraform will access your GCP account by using a service account key. You
     can [create one](https://console.cloud.google.com/apis/credentials/serviceaccountkey) in the GCP Console. While creating the key, assign the role as **Project > Editor**.
+
+>   Note : Afer creating the GCP service account key, download the service account key in json format and   place it in the Jenkins-k8s-jcasc/terraform directory of the project and rename the file as **account.json** This file containes the credentials for terraform to create resources in Google cloud.
+
 -   **Google Kubernetes Engine API**: You can enable the Google Kubernetes Engine API for your project in
     the [GCP Console](https://console.developers.google.com/apis/api/container.googleapis.com).
+
+-   **Google Compute Engine API**: You can enable the Google Kubernetes Engine API for your project in
+    the [GCP Console](https://console.developers.google.com/apis/api/compute.googleapis.com).
+
 -   **Terraform**: You can install Terraform with [these instructions](https://learn.hashicorp.com/terraform/gcp/install).
+
 -   **Kubectl**: [Install Kubectl on your local machine to interact with the GKE](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
 
-> Note : Afer creating the GCP service account key, download the account.json file and place it in the Jenkins/-k8s-jcasc/terraform directory of the project. This file containes the credentials for terraform to create resources in Google cloud.
 
 ## How to run the project ?
 Please follow the steps below to setup jenkins master worker configuration on Kubernetes cluster:
+
+### Make changes to values.tfvars
+- Update the project_id to the project id mentioned in account.json file placed under Jenkins-k8s-jcasc/terraform.
 
 ### Terraform commands
 ```
@@ -82,6 +94,7 @@ The above deployment installed the Jenkins in the cluster. The verification of t
 ### 1. Using Below Commands:
 ```
 $ export KUBECONFIG="$(terraform output kubeconfig_path)"
+# if you are on windows, use SET KUBECONFIG="./kubeconfig"
 $ helm list
 $ kubectl get po 
 $ kubectl get svc
@@ -120,6 +133,7 @@ Jenkins server is deployed in the cluster and can be accessed by copying the Ext
 
 username:
 password:
+
 
 JENKINS URL = http://<External IP of service>
 

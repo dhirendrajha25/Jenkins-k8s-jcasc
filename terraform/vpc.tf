@@ -1,3 +1,4 @@
+# Resources such as VPC, Subnet are created on gcp as part of this terraform file. 
 variable "project_id" {
   description = "project id"
 }

@@ -1,4 +1,4 @@
-
+# Resources such as Kubernetes cluster, nodes, services, helm charts are created as part of this terraform file.
 variable "gke_num_nodes" {
   default     = 2
   description = "number of gke nodes"
