@@ -360,7 +360,7 @@ master:
           - script: >
               folder('testjobs')
           - script: >
-              pipelineJob('Mendixtestjob/jenkins-agent') {
+              pipelineJob('testjobs/default-agent') {
                 definition {
                   cps {
                     script("""\

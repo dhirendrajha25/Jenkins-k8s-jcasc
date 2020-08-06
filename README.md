@@ -17,6 +17,25 @@ automated deployment of kubernetes cluster on google cloud and also to deploy Je
 - Configure a CI/CD Jenkins pipeline
 - Install a helm chart(containing jenkins configuration) on the kubernetes cluster using terraform 
 
+## Helm Charts 
+- In this project, I have used the stable jenkins helm chart from the official repo.
+
+- This chart refers to the official Jenkins image.
+
+- I have used the stable jenkins in the project for two reasons:
+    > The chart comes with jcasc plugin installed so additional step was needed to configure this.
+
+    > For making the project simple and adhere to the timelines.
+
+## jcasc configuration for jenkins
+- The jenkins configuration for jenkins slave, kubernetes and pod template and job has been define in the value.yaml file place under jenkins-k8s-jcasc/terraform/jenkins/.
+
+- The configuration is generated as config map as part of the project
+
+- Using this approach no manual work is needed to configure the jobs or the pods templates.
+
+- Node image has been referred has part of the jenkins slave configuration as it is need to build the package
+
 ## Prerequisites to run the project 
 -   **GCP account**: If you don’t have a GCP account, [create one now](https://console.cloud.google.com/freetrial/). This tutorial can be
     completed using only the services included in [GCP  Free Tier](https://cloud.google.com/free/).
@@ -29,15 +48,28 @@ automated deployment of kubernetes cluster on google cloud and also to deploy Je
 -   **Terraform**: You can install Terraform with [these instructions](https://learn.hashicorp.com/terraform/gcp/install).
 -   **Kubectl**: [Install Kubectl on your local machine to interact with the GKE](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
 
-## Follow below steps to have the k8s cluster with Jenkins master-worker up and running - 
+> Note : Afer creating the GCP service account key, download the account.json file and place it in the Jenkins/-k8s-jcasc/terraform directory of the project. This file containes the credentials for terraform to create resources in Google cloud.
+
+## How to run the project ?
+Please follow the steps below to setup jenkins master worker configuration on Kubernetes cluster:
 
 ### Terraform commands
 ```
-$ cd jenkins-k8s/terraform
-$ terraform init
-$ sh terraform.sh plan values.tfvars  #used to initialize a working directory containing Terraform configuration files
-$ sh terraform.sh apply values.tfvars --auto-approve #used to create an execution plan for the resources such as kubernetes cluster, helm charts on google cloud.
+$ cd Jenkins-k8s-jcasc/terraform
 ```
+```
+$ terraform init
+```
+```
+$ sh terraform.sh plan values.tfvars  # used to initialize a working directory containing Terraform configuration files
+```
+![plan](./images/plan.PNG)
+
+```
+$ sh terraform.sh apply values.tfvars --auto-approve 
+#used to create an execution plan for the resources such as kubernetes cluster, helm charts on google cloud.
+```
+![apply](./images/apply.PNG)
 ### Check K8S resources
 
 * You can check k8s resource on google kubernetes engine dashboard - refer [here](https://cloud.google.com/kubernetes-engine/docs/concepts/dashboards) for more details.
@@ -45,25 +77,39 @@ $ sh terraform.sh apply values.tfvars --auto-approve #used to create an executio
 
 ### Verify Jenkins deployment
 
-The above deployment installed the Jenkins in the cluster. To check running master Jenkins , run :
+The above deployment installed the Jenkins in the cluster. The verification of the deployment can be done in two ways:
+
+### 1. Using Below Commands:
 ```
-kubectl get po
+$ export KUBECONFIG="$(terraform output kubeconfig_path)"
+$ helm list
+$ kubectl get po 
+$ kubectl get svc
+$ kubectl get nodes 
 ```
+> Note : You can refer the below screenshot to verify the sample response of above commands.
 
-OR
+![The below screenshot conatains list of Commands that can be used to verify the deployment](./images/commands.PNG)
 
-check GKE dashboard.
+### 2. Logging directly into google cloud account;
 
+check GKE dashboard to verify deployment
+- Login to your google cloud account and select you project.
 
-You can get the external IP of the jenkins service. Run below command to view service:
+> ![GKE](./images/selectproject.PNG)
 
-```
-kubectl get svc
-```
+- Check service and ingress. Here you also find the jenkins url to access the console.
 
-OR
+> ![GKE1](./images/jenkins-url.PNG)
 
-check GKE dashboard.
+- Check clusters.
+
+> ![GKE1](./images/cluster.PNG)
+
+- Check workloads.
+
+> ![GKE1](./images/workloads.PNG)
+
 
 > Note: The Jenkins deployment uses a persistent volume claim that is mounted to /var/jenkins_home. This assures the data is saved across crashes, restarts, and upgrades.
 
@@ -72,47 +118,61 @@ check GKE dashboard.
 
 Jenkins server is deployed in the cluster and can be accessed by copying the External-IP of service **jenkins-jenkins-k8s** and pasting into the browser. In the Login page, enter admin in username and password.
 
+username:
+password:
+
 JENKINS URL = http://<External IP of service>
+
+Cluster IP can be found in the service and ingress section in the GKP console.
+
+![GKE1](./images/jenkins-url.PNG)
 
 Jenkins page will come with Login button !!!
 
-### Jenkins Slaves Configuration
-
-We are using official cloudbees jenkins slave docker image - 
-
-**Configuring the Jenkins Kubernetes Plugin** :-
-
-We can now configure the plugin. Go to Manage Jenkins and select Configure System, scroll down to Cloud section at the bottom. Click on Add a new cloud and select Kubernetes, in the Kubernetes URL field, enter http:// followed by the cluster endpoint address of Kubernetes service. Next, in the Jenkins tunnel field, enter the IP address and port retrieved from the jenkins-jnlp service.
-
-<add a image here>
-    
-Now, scroll down to the Images section at the bottom, click the Add Pod Template button.
-
-Fill out the Name and Labels fields with unique values to identify the first agent. The label will specify which agent image should be used to run the build.The label will specify which agent image should be used to run the build.
-
-<add a image here>
- 
-Next, in the Containers field, click on the Add Container button and select Container Template. In the section that appears, fill out the following fields:
-
-docker image : cloudbees/jnlp-slave-with-java-build-tools:latest
-
-<add a image here>
-
-Click on the Save button at the bottom to save the changes and continue.
-
---- configure install automatically npm---
+![jenkins web page](./images/jenkins.PNG)
 
 
-Create a new build job to ensure that Jenkins can scale on top of Kubernetes. On the main Jenkins page, click New Item and enter the name of the job. Select the Freestyle Project and click on the OK button.
 
-On the next page, in the Label Expression field, type the label set for the Jenkins agent image(Ex- Jenkins-slave). Scroll down to the Build Environment section and the Build section, click Add build step and select Execute shell. Paste the command or script in the text box that appears:
 
-<add a image here>
-    
-Click on the Save button when finished.
+### Running the Job
 
-Now, go to the home screen and start the job just created by clicking on the Build Now icon. As soon as the job starts, after a few seconds, the pod will begin to create to execute the build.
+- Once you are able to login into the jenkins console you will see a job already created.
 
-<add a image here>
+![jenkins web page](./images/ManageJenkins.PNG)
+
+- The job is preconfigured using jcasc and points to the github project for mendix widget.
+
+- The last step is just to build the Job and this activity might take upto 20 mins.
+
+![jenkins web page](./images/BuiltJob.PNG)
+
+- If you run into any permission issue to approve the build for the pipeline script, kindly follow the below step
+  
+  > Go to Configure and scroll down to pipeline script
+  
+  > Enable the groovy sandbox checkbox.
+  
+  > Save configuration and theb Build the job.
+
+  ![jenkins web page](./images/groovySandbox.PNG)
+
+
+  ### Shutting down the cluster
+
+  - Once the job has been built you can destroy the cluster using the below command:
+  
+  ```
+  sh terraform.sh plan values.tfvars --auto-approve
+  # will delete all resouces created using terraform as part of this assessment
+  ```
+
+
+
+
+
+
+
+
+
 
 
