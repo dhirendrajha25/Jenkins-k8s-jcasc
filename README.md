@@ -43,6 +43,7 @@ automated deployment of kubernetes cluster on google cloud and also to deploy Je
 ## Prerequisites to run the project 
 -   **GCP account**: If you don’t have a GCP account, [create one now](https://console.cloud.google.com/freetrial/). This tutorial can be
     completed using only the services included in [GCP  Free Tier](https://cloud.google.com/free/).
+    > Note: Kindly select "onwer role" for the sevice account as this will be required to create VPC, Subnets, k8s cluster. I have used owner role for the purpose of simplicity in this assesment.
 
 -   **GCP project**: GCP organizes resources into projects. You can [create one](https://console.cloud.google.com/projectcreate) in the GCP Console.
     You need the project ID later in this tutorial.
@@ -77,10 +78,13 @@ $ cd Jenkins-k8s-jcasc/terraform
 $ terraform init
 ```
 ```
-# I have created a shell script to supply arguments to the normal terraform commands.
-shared a snippet from terraform.sh file
 terraform $1 -var-file=$2 $3
 
+I have created a shell script to supply arguments to the normal terraform commands. 
+A snippet from terraform.sh file is shared above.
+
+```
+```
 $ sh terraform.sh plan values.tfvars  # used to initialize a working directory containing Terraform configuration files
 ```
 ![plan](./images/plan.PNG)
@@ -99,7 +103,7 @@ $ sh terraform.sh apply values.tfvars --auto-approve
 
 The above deployment installed the Jenkins in the cluster. The verification of the deployment can be done in two ways:
 
-### 1. Using Below Commands:
+### option 1: Using Below Commands:
 ```
 $ export KUBECONFIG="$(terraform output kubeconfig_path)"
 ```
@@ -120,7 +124,7 @@ $ kubectl get nodes
 ![get nodes](./images/nodes.PNG)
 
 
-### 2. Logging directly into google cloud account;
+### option 2: Logging directly into google cloud account;
 
 check GKE dashboard to verify deployment
 - Login to your google cloud account and select you project.
@@ -144,16 +148,18 @@ check GKE dashboard to verify deployment
 
 Jenkins server is deployed in the cluster and can be accessed by copying the External-IP of service **jenkins-k8s** and pasting into the browser. In the Login page, enter admin in username and password.
 
-username:admin
-
-password: In order to get the password, run the below command.
-
-***kubectl get secret --namespace default jenkins-k8s -o jsonpath="{.data.jenkins-admin-password}" | base64 --decode***
-
-
 Jenkins page will come with Login button !!!
 
 ![jenkins web page](./images/jenkins.PNG)
+
+
+**username: admin**
+
+**password: In order to get the password, run the below command.**
+```
+kubectl get secret --namespace default jenkins-k8s -o jsonpath="{.data.jenkins-admin-password}" | base64 --decode
+```
+
 
 
 

@@ -322,7 +322,7 @@ master:
                   ttyEnabled: true
                   workingDir: "/home/jenkins/agent"
                 hostNetwork: false
-                label: "jenkins-k8s-jenkins-slave "
+                label: "jenkins-k8s-jenkins-slave"
                 name: "default"
                 nodeUsageMode: NORMAL
                 podRetention: "never"
@@ -398,7 +398,7 @@ master:
             tokenGenerationOnCreationEnabled: false
             usageStatisticsEnabled: true
           globalJobDslSecurityConfiguration:
-            useScriptSecurity: false  
+            useScriptSecurity: true 
           sSHD:
             port: -1
         unclassified:
