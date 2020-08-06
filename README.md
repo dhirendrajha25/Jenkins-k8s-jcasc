@@ -99,7 +99,7 @@ $ sh terraform.sh plan values.tfvars
 
 
 ```
-# Below command is used to apply to create the resources such as kubernetes cluster, helm charts on google cloud.
+# Below command is used to apply to create the resources such as kubernetes cluster, helm charts on google cloud. Run below command - 
 
 $ sh terraform.sh apply values.tfvars --auto-approve 
 ```
