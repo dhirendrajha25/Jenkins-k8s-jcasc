@@ -77,11 +77,17 @@ $ cd Jenkins-k8s-jcasc/terraform
 ```
 $ terraform init
 ```
+> I have created a shell script to supply arguments to the normal terraform commands. See below -
 ```
-terraform $1 -var-file=$2 $3
+#!/bin/bash
 
-I have created a shell script to supply arguments to the normal terraform commands. 
-A snippet from terraform.sh file is shared above.
+export PROJECT_ID=jenkins-test-project
+export GOOGLE_APPLICATION_CREDENTIALS="$PWD/account.json"
+terraform $1 -var-file=$2 $3
+if [ "$1" = "apply" ] ; then
+   export KUBECONFIG="$(terraform output kubeconfig_path)"
+fi
+
 
 ```
 ```
