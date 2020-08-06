@@ -97,9 +97,11 @@ $ sh terraform.sh plan values.tfvars
 ```
 ![plan](./images/plan.PNG)
 
+
 ```
+# Below command is used to apply to create the resources such as kubernetes cluster, helm charts on google cloud.
+
 $ sh terraform.sh apply values.tfvars --auto-approve 
-#used to create an execution plan for the resources such as kubernetes cluster, helm charts on google cloud.
 ```
 ![apply](./images/apply.PNG)
 ### Check K8S resources
