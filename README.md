@@ -148,7 +148,7 @@ username:admin
 
 password: In order to get the password, run the below command.
 
-kubectl get secret --namespace default jenkins-k8s -o jsonpath="{.data.jenkins-admin-password}" | base64 --decode
+***kubectl get secret --namespace default jenkins-k8s -o jsonpath="{.data.jenkins-admin-password}" | base64 --decode***
 
 
 Jenkins page will come with Login button !!!
