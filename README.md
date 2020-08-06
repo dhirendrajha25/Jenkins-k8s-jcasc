@@ -16,19 +16,23 @@ automated deployment of kubernetes cluster on google cloud and also to deploy Je
 - Jenkinks Master and worker configuration deployed on the GKE cluster using offical docker images for jenkins
 - Configure a CI/CD Jenkins pipeline
 - Install a helm chart(containing jenkins configuration) on the kubernetes cluster using terraform 
+- Dynamic scaling of the jenkins workers on demand
 
 ## Helm Charts 
-- In this project, I have used the stable jenkins helm chart from the official repo.
+- In this project, I have used the stable jenkins helm chart from the official [repo](https://github.com/helm/charts/tree/master/stable/jenkins)
 
-- This chart refers to the official Jenkins image.
+- This chart refers to the official Jenkins [image](https://hub.docker.com/r/jenkins/jenkins/)
 
 - I have used the stable jenkins in the project for two reasons:
     > The chart comes with jcasc plugin installed so no additional step was needed to configure this.
 
     > For making the project simple and adhere to the timelines.
 
-## jcasc configuration for jenkins
+
+## [jcasc](https://github.com/jenkinsci/configuration-as-code-plugin) configuration for jenkins
 - The jenkins configuration for jenkins slave, kubernetes and pod template and job has been define in the value.yaml file place under jenkins-k8s-jcasc/terraform/jenkins/.
+
+> Note: you can search the text JCasC configuration in the values yaml to view the configuration done.
 
 - The configuration is generated as config map as part of the project
 
@@ -73,6 +77,10 @@ $ cd Jenkins-k8s-jcasc/terraform
 $ terraform init
 ```
 ```
+# I have created a shell script to supply arguments to the normal terraform commands.
+shared a snippet from terraform.sh file
+terraform $1 -var-file=$2 $3
+
 $ sh terraform.sh plan values.tfvars  # used to initialize a working directory containing Terraform configuration files
 ```
 ![plan](./images/plan.PNG)
@@ -94,15 +102,23 @@ The above deployment installed the Jenkins in the cluster. The verification of t
 ### 1. Using Below Commands:
 ```
 $ export KUBECONFIG="$(terraform output kubeconfig_path)"
-# if you are on windows, use SET KUBECONFIG="./kubeconfig"
-$ helm list
-$ kubectl get po 
+```
+> Note: This command is used export the kubeconfig file that is generated dynamically upon cluster creation. Exporting KUBECONFIG is necessary for the kubectl commands to connect with the cluster.
+
+if running the setup on windows os, use SET KUBECONFIG="./kubeconfig"
+```
+$ kubectl get po
+```
+![get pods](./images/pods.PNG) 
+```
 $ kubectl get svc
+```
+![get svc](./images/svc.PNG)
+```
 $ kubectl get nodes 
 ```
-> Note : You can refer the below screenshot to verify the sample response of above commands.
+![get nodes](./images/nodes.PNG)
 
-![The below screenshot conatains list of Commands that can be used to verify the deployment](./images/commands.PNG)
 
 ### 2. Logging directly into google cloud account;
 
@@ -112,7 +128,7 @@ check GKE dashboard to verify deployment
 > ![GKE](./images/selectproject.PNG)
 
 - Check service and ingress. Here you also find the jenkins url to access the console.
-
+> Note: I have created and destroyed the cluster several time hence the ip address is different in the below screenshot 
 > ![GKE1](./images/jenkins-url.PNG)
 
 - Check clusters.
@@ -124,19 +140,16 @@ check GKE dashboard to verify deployment
 > ![GKE1](./images/workloads.PNG)
 
 
-> Note: The Jenkins deployment uses a persistent volume claim that is mounted to /var/jenkins_home. This assures the data is saved across crashes, restarts, and upgrades.
-
-
 #### Access Jenkins
 
-Jenkins server is deployed in the cluster and can be accessed by copying the External-IP of service **jenkins-jenkins-k8s** and pasting into the browser. In the Login page, enter admin in username and password.
+Jenkins server is deployed in the cluster and can be accessed by copying the External-IP of service **jenkins-k8s** and pasting into the browser. In the Login page, enter admin in username and password.
 
 username:admin
-password:
 
+password: In order to get the password, run the below command.
 
+kubectl get secret --namespace default jenkins-k8s -o jsonpath="{.data.jenkins-admin-password}" | base64 --decode
 
-![GKE1](./images/jenkins-url.PNG)
 
 Jenkins page will come with Login button !!!
 

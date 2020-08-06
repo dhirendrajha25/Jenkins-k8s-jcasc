@@ -280,6 +280,7 @@ master:
   # /var/jenkins_home/casc_configs (by default) and will be processed by the Configuration as Code Plugin.  The lines after each |
   # become the content of the configuration yaml file.  The first line after this is a JCasC root element, eg jenkins, credentials,
   # etc.  Best reference is https://<jenkins_url>/configuration-as-code/reference.  The example below creates a welcome message:
+  # JCasC configuration
   JCasC:
     enabled: true
     defaultConfig: false
@@ -396,6 +397,8 @@ master:
             creationOfLegacyTokenEnabled: false
             tokenGenerationOnCreationEnabled: false
             usageStatisticsEnabled: true
+          globalJobDslSecurityConfiguration:
+            useScriptSecurity: false  
           sSHD:
             port: -1
         unclassified:
