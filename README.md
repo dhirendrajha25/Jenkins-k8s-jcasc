@@ -91,7 +91,7 @@ fi
 
 ```
 ```
-# used to initialize a working directory containing Terraform configuration files
+# The terraform plan command is used to create an execution plan. Run below command - 
  
 $ sh terraform.sh plan values.tfvars 
 ```
