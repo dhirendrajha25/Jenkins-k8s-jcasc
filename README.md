@@ -91,7 +91,9 @@ fi
 
 ```
 ```
-$ sh terraform.sh plan values.tfvars  # used to initialize a working directory containing Terraform configuration files
+# used to initialize a working directory containing Terraform configuration files
+ 
+$ sh terraform.sh plan values.tfvars 
 ```
 ![plan](./images/plan.PNG)
 
