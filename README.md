@@ -23,7 +23,7 @@ automated deployment of kubernetes cluster on google cloud and also to deploy Je
 - This chart refers to the official Jenkins image.
 
 - I have used the stable jenkins in the project for two reasons:
-    > The chart comes with jcasc plugin installed so additional step was needed to configure this.
+    > The chart comes with jcasc plugin installed so no additional step was needed to configure this.
 
     > For making the project simple and adhere to the timelines.
 
@@ -131,13 +131,10 @@ check GKE dashboard to verify deployment
 
 Jenkins server is deployed in the cluster and can be accessed by copying the External-IP of service **jenkins-jenkins-k8s** and pasting into the browser. In the Login page, enter admin in username and password.
 
-username:
+username:admin
 password:
 
 
-JENKINS URL = http://<External IP of service>
-
-Cluster IP can be found in the service and ingress section in the GKP console.
 
 ![GKE1](./images/jenkins-url.PNG)
 
@@ -176,8 +173,8 @@ Jenkins page will come with Login button !!!
   - Once the job has been built you can destroy the cluster using the below command:
   
   ```
-  sh terraform.sh plan values.tfvars --auto-approve
-  # will delete all resouces created using terraform as part of this assessment
+  sh terraform.sh destroy values.tfvars --auto-approve
+  # will delete all resouces created using terraform as part of this assessment.
   ```
 
 
